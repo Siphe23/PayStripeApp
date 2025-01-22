@@ -30,6 +30,8 @@ const StripeApp = () => {
 
   // Handle payment button press
   const handlePayPress = async () => {
+    console.log(cardDetails);  // Log cardDetails for debugging
+    
     // Check if card details are complete
     if (!cardDetails?.complete) {
       Alert.alert("Please complete your card details");
@@ -45,7 +47,6 @@ const StripeApp = () => {
       return;
     }
 
-    // Confirm payment with the obtained client secret
     const { paymentIntent, confirmError } = await confirmPayment(clientSecret, {
       type: "Card",
       paymentMethod: {
@@ -55,7 +56,6 @@ const StripeApp = () => {
 
     setLoading(false);
 
-    // Handle confirmation result
     if (confirmError) {
       Alert.alert("Payment failed", confirmError.message);
     } else {
@@ -70,15 +70,20 @@ const StripeApp = () => {
         <CardField
           postalCodeEnabled={false}  // Optionally disable postal code
           placeholder={{
-            number: "4242 4242 4242 4242",  // Test card number
+            number: "4242 4242 4242 4242",  // Test card number for Stripe test mode
+            expiration: "07/32",  // Expiration placeholder in MM/YY format
+            cvc: "123",  // CVV placeholder
           }}
-          onCardChange={(cardDetails) => setCardDetails(cardDetails)}  // Update card details on change
+          onCardChange={(cardDetails) => {
+            console.log("Card details:", cardDetails);  // Log card details to check if they are populated correctly
+            setCardDetails(cardDetails);
+          }}
           style={{
             height: 50,
             marginVertical: 30,
           }}
         />
-
+        
         {/* Display loading indicator or Pay button */}
         {loading ? (
           <ActivityIndicator size="large" color="#0000ff" />
